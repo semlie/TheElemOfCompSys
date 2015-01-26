@@ -3,12 +3,30 @@ package ex10.cs
 object run {
 
   def main(args: Array[String]): Unit = {
-    //get file in a 
-		  val data = helpers.allFileLines("C:/tmp/p10/ArrayTest/Main.jack").replaceAll("""(?:\/\*\*.+\*\/)""", "").split("\\s").filterNot(_ =="").toList
-		  val tok = new tokenizing
-		  var s = """Keyboard.readInt("HOW MANY NUMBERS? ");"""
-		   println(tok.parsToTokens(s))
-		  
+
+    if (args.length > 0) {
+
+      //get Dir from args
+      val Fullpath = args(0)
+      // read all files in dir to list
+      val files = helpers.fileList(Fullpath)
+
+      val path = Fullpath.split("/").last
+      
+      val tok = new tokenizing
+        
+      for (file <- files) {
+       
+    	 def d = helpers.writeTranslatToFile(file+"X",".xml") _ 
+    	 
+    	 tok.WriteXmlTokens(
+    	     tok.parsToTokens(
+    	         helpers.allFileLines(
+    	             file))
+    	             ,d)
+      }
+      // val  fileName = "StackTest.vm"
+
+    }
   }
-  
 }

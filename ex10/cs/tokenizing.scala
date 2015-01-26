@@ -12,15 +12,19 @@ class tokenizing extends RegexParsers {
   case object Digit extends token
   case object Err extends token
 
+  
+  def word: Parser[String]    = """[a-z]+""".r ^^ { _.toString }
+  
+  
   /**
    * Regex for macheing Tokens
    */
   val words = """(?s)[a-zA-Z]+\s(.*)""" //> words  : String = [a-zA-Z]+
-  val symbol = """(?s)([\{\}\(\)\[\]\.\;\+\-\&\|\<\>\=\~])(.*)""".r
+  val symbol = """(?s)([\{\}\(\)\[\]\.\/\,\;\+\-\&\|\<\>\=\~])(.*)""".r
   val whiteSpaces = "(?s)\\s(.*)".r
   val keyword = """(?s)(class|constructor|function|method|field|static|var|int|char|boolean|void|true|false|null|this|let|do|if|else|while|return)(.*)""".r
   val fCall = """(?s)([a-zA-Z]+)\.([a-zA-Z]+)\((.*)\)\s*\;(.*)""".r //Keyboard.readInt("HOW MANY NUMBERS? ");
-  val stringConstant = """(?s)\"(.*)\"(.*)""".r //> stringConstant  : scala.util.matching.Regex = \"(.*)\"
+  val stringConstant = """(?s)\"(.*?)\"(.*)""".r //> stringConstant  : scala.util.matching.Regex = \"(.*)\"
   val digit = """(?s)([0-9]+)(.*)""".r //> digit  : scala.util.matching.Regex = ([0-9]+)
   val identifair = """(?s)([a-zA-Z_]+[0-9a-zA-Z_]*)(.*)""".r
   val mixed = """(?s)(%s|%s)(%s|%s)(.*)""".format(words, symbol, symbol, words).r
@@ -75,6 +79,9 @@ class tokenizing extends RegexParsers {
     }
   }
   def parsToTokens(source: String): List[(token, String)] = {
+    /**
+     * parse all to tokens and output them in list of tuple (TYPE , STRING TOKEN)
+     */
    @tailrec def findTokensBeRegex(acc: List[(token, String)], rest: String): List[(token, String)] = {
       if (rest == "") acc
       else {
@@ -92,5 +99,24 @@ class tokenizing extends RegexParsers {
       }
     }
     findTokensBeRegex(List[(token, String)](), source).reverse
+  }
+  
+  def WriteXmlTokens(l:List[(token, String)],fu: String => Any):Unit ={
+    fu("<tokens>")
+    for(term <- l){
+      fu(matchParsseRole(term))
+      
+    }
+    fu("</tokens>")
+  }
+  def matchParsseRole(t:(token, String)):String = {
+    t match {
+    case (Keyword, w) => xkeyword(w)
+    case (Symbol, w) => xsymbol(w)
+    case (Identifair, w) => xidentifier(w)
+    case (StringConstant, w) => xstringConstant(w)
+    case (Digit, w) => xdigit(w)
+    case (Err,w) => ""
+}
   }
 }
