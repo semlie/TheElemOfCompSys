@@ -19,11 +19,11 @@ import scala.util.parsing.combinator._
 object RepeatParser extends JavaTokenParsers {
   var count = 0
 
-  def repeat = "repeat" ~> n <~ "times" ~ block
-  def n      = wholeNumber ^^ { reps => count = reps.toInt }
-  def block  = "{" ~> lines <~ "}"
-  def lines  = rep(line)
-  def line   = "say" ~> message ^^ { msg =>
+  val repeat = "repeat" ~> n <~ "times" ~ block
+  val n      = wholeNumber ^^ { reps => count = reps.toInt }
+  val block  = "{" ~> lines <~ "}"
+  val lines  = rep(line)
+  val line   = "say" ~> message ^^ { msg =>
     for (i <- 1 to count) println(msg)
   }
   def message = stringLiteral
@@ -67,7 +67,7 @@ object RepeatParser2 extends JavaTokenParsers {
   def repeat = ("repeat" ~> n <~ "times" ~ block)
   def n      = stringLiteral ^^ { s =>
     println("idiot!! Bad invocation: "+s)
-    } | wholeNumber ^^ { reps => count = reps.toInt }
+    } ||| wholeNumber ^^ { reps => count = reps.toInt }
   def block  = "{" ~> lines <~ "}" ^^ { _ =>
     for (i <- 1 to count) messages foreach println
   }
